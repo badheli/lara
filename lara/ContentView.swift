@@ -150,6 +150,11 @@ struct ContentView: View {
                             mgr.panic()
                         }
                         .disabled(!mgr.dsready)
+                        
+                        Button("gettask") {
+                            ourtask(ourproc())
+                        }
+                        .disabled(!mgr.dsready)
                     } header: {
                         Text("Other")
                     }
