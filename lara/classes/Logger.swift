@@ -27,7 +27,7 @@ class Logger: ObservableObject {
     private var ogstderr: Int32 = -1
     private var logfileurl: URL?
     private var logfilehandle: FileHandle?
-    private let ignoredLogSubstrings = [
+    private let ignoredlogsubstrings = [
         "Faulty glyph",
         "outline detected - replacing with a space/null glyph",
         "Gesture: System gesture gate timed out",
@@ -158,6 +158,7 @@ class Logger: ObservableObject {
 
     func capture() {
         if stdoutpipe != nil { return }
+        reopenlogfileondemand()
 
         let pipe = Pipe()
         stdoutpipe = pipe
@@ -176,6 +177,32 @@ class Logger: ObservableObject {
             if data.isEmpty { return }
             guard let chunk = String(data: data, encoding: .utf8), !chunk.isEmpty else { return }
             self?.appendraw(chunk)
+        }
+    }
+
+    func stopcapture() {
+        guard let pipe = stdoutpipe else { return }
+        pipe.fileHandleForReading.readabilityHandler = nil
+
+        if ogstdout != -1 {
+            dup2(ogstdout, STDOUT_FILENO)
+            close(ogstdout)
+            ogstdout = -1
+        }
+        if ogstderr != -1 {
+            dup2(ogstderr, STDERR_FILENO)
+            close(ogstderr)
+            ogstderr = -1
+        }
+
+        try? pipe.fileHandleForWriting.close()
+        try? pipe.fileHandleForReading.close()
+        stdoutpipe = nil
+
+        if let handle = logfilehandle {
+            try? handle.synchronize()
+            try? handle.close()
+            logfilehandle = nil
         }
     }
 
@@ -212,7 +239,7 @@ class Logger: ObservableObject {
         if isgarbageline(trimmed) {
             return true
         }
-        for fragment in ignoredLogSubstrings {
+        for fragment in ignoredlogsubstrings {
             if message.contains(fragment) {
                 return true
             }
@@ -257,6 +284,18 @@ class Logger: ObservableObject {
             try? logfilehandle?.write(contentsOf: data)
             try? logfilehandle?.synchronize()
         }
+    }
+
+    private func reopenlogfileondemand() {
+        if logfilehandle != nil { return }
+        guard let url = logfileurl else { return }
+        if !FileManager.default.fileExists(atPath: url.path) {
+            FileManager.default.createFile(atPath: url.path, contents: nil, attributes: [
+                FileAttributeKey.protectionKey: FileProtectionType.none
+            ])
+        }
+        logfilehandle = try? FileHandle(forWritingTo: url)
+        try? logfilehandle?.seekToEnd()
     }
 
     private func appendtofile(_ lines: [String]) {

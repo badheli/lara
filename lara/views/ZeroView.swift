@@ -118,7 +118,7 @@ struct ZeroView: View {
     func apply() {
         for tweak in tweaks where selected.contains(tweak.id) {
             for path in tweak.path {
-                mgr.kfszeropage(at: path)
+                mgr.vfszeropage(at: path)
             }
         }
     }

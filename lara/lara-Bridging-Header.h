@@ -6,7 +6,7 @@
 #import <Foundation/Foundation.h>
 #import "darksword.h"
 #import "utils.h"
-#import "kfs.h"
+#import "vfs.h"
 
 void test(NSString *path);
 

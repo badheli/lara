@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct lara: App {
+    @Environment(\.scenePhase) private var scenePhase
+
     init() {
         globallogger.capture()
     }
@@ -28,6 +30,13 @@ struct lara: App {
             }
             .onAppear {
                 init_offsets()
+            }
+            .onChange(of: scenePhase) { phase in
+                if phase == .background {
+                    globallogger.stopcapture()
+                } else if phase == .active {
+                    globallogger.capture()
+                }
             }
         }
     }

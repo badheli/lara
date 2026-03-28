@@ -58,7 +58,7 @@ struct EditorView: View {
 
             Section("Manage") {
                 Button("Apply", action: apply)
-                    .disabled(!mgr.kfsready)
+                    .disabled(!mgr.vfsready)
 
                 Button("Reset", action: reset)
 
@@ -113,12 +113,12 @@ struct EditorView: View {
         do {
             let data = try PropertyListSerialization.data(fromPropertyList: mg, format: .binary, options: 0)
             try data.write(to: modURL)
-            let targetSize = mgr.kfssize(path: systemPath)
+            let targetSize = mgr.vfssize(path: systemPath)
             if targetSize >= 0 && Int64(data.count) > targetSize {
                 status = "Failed: modified plist (\(data.count) bytes) is larger than target (\(targetSize) bytes). Reduce changes or size."
                 return
             }
-            let ok = mgr.kfsoverwritefromlocalpath(target: systemPath, sourcePath: modURL.path)
+            let ok = mgr.vfsoverwritefromlocalpath(target: systemPath, sourcePath: modURL.path)
             status = ok ? "Applied." : "Failed."
         } catch {
             status = error.localizedDescription

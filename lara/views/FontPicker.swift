@@ -13,7 +13,7 @@ struct FontPicker: View {
     @ObservedObject var mgr: laramgr
 
     private func applyfont(_ resource: String, label: String) {
-        let success = mgr.kfsoverwrite(target: laramgr.fontpath, withBundledFont: resource)
+        let success = mgr.vfsoverwrite(target: laramgr.fontpath, withBundledFont: resource)
         success ? mgr.logmsg("font changed to \(label)") : mgr.logmsg("failed to change font")
     }
 

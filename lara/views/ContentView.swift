@@ -84,24 +84,24 @@ struct ContentView: View {
                         }
                     }
 
-                    Section("Kernel File System") {
+                    Section("Virtual File System") {
                         Button {
-                            mgr.kfsinit()
+                            mgr.vfsinit()
                         } label: {
-                            if !mgr.kfsready {
-                                Text("Initialise KFS")
+                            if !mgr.vfsready {
+                                Text("Initialise VFS")
                             } else {
                                 HStack {
-                                    Text("Initialised KFS")
+                                    Text("Initialised VFS")
                                     Spacer()
                                     Image(systemName: "checkmark.circle")
                                         .foregroundColor(.green)
                                 }
                             }
                         }
-                        .disabled(!mgr.dsready || mgr.kfsready)
+                        .disabled(!mgr.dsready || mgr.vfsready)
                         
-                        if mgr.kfsready {
+                        if mgr.vfsready {
                             NavigationLink("Font Overwrite") {
                                 FontPicker(mgr: mgr)
                             }
