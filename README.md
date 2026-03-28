@@ -20,6 +20,9 @@ If lara doesnt work on your device, and you want to help the project, please als
 - MobileGestalt Editor
 - File Manager (Full Disk r/w)
 
+## known issues:
+on iOS 17.x, the kernel panics when lara is closed from the app switcher. this may or may not be fixed soon?
+
 ## credits:
 - opa334 for the kernel exploit poc, ChOma and XPF
 - AppInstaller iOS for help with offsets
